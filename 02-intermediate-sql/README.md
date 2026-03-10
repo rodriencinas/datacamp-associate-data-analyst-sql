@@ -102,3 +102,4 @@ ORDER BY avg_budget DESC;
 ## 📝 Notas Personales
 
 > En progreso. La diferencia entre WHERE (filtra filas) y HAVING (filtra grupos) fue clave.
+> Vamos avanzando a paso firme, con buena base teórica y práctica. Se completó un 50% del curso y hubieron muchísimas palabras claves nuevas, filtrado con distintos tipos de datos aplicando varias técnicas.

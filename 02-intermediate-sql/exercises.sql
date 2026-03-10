@@ -1,150 +1,160 @@
--- ============================================================
--- CURSO 02: Intermediate SQL
--- DataCamp — Associate Data Analyst in SQL
--- ============================================================
--- Base de datos: films
--- ============================================================
+-- CHAPTER 1. SELECTING DATA
+-- VID 1: Consultar una base de datos
+/*consultaremos una base de datos con las siguientes tablas:
+* films
+* people
+* reviews
+* roles*/
 
+-- COUNT --> número de registros con un valor en un campo
+SELECT COUNT(birthdate) AS count_birthdates
+FROM people;
 
--- ============================================================
--- CAPÍTULO 1: Selecting Data
--- ============================================================
+SELECT COUNT(name) AS count_names, COUNT(birthdate) AS count_birthdates
+FROM people;
 
--- Contar total de películas en la base
-SELECT COUNT(*) AS total_films
+SELECT COUNT(*) --> count all records in a table 
+-- * represents all fields
+
+-- DISTINCT
+SELECT DISTINCT language
 FROM films;
 
--- Suma de todos los presupuestos
-SELECT SUM(budget) AS total_budget
+-- DISTINCT + COUNT
+SELECT COUNT(DISTINCT language) AS count_distinct_languages
 FROM films;
 
--- Promedio de duración
-SELECT AVG(duration) AS avg_duration
-FROM films;
+-- VID 2: Ejecución de consulta
+/*SQL is not processed inits written order
+1- FROM
+2- SELECT
+3- LIMIT
 
--- Película más antigua y más reciente
-SELECT MIN(release_year) AS oldest,
-       MAX(release_year) AS newest
-FROM films;
+también hemos visto depuración del código SQL (DEBUGGIN SQL), cómo entender los errores, los MÁS COMUNES SON:
+* MISSPELLING
+* INCORRECT CAPITALIZATION
+* INCORRECT OR MISSING PUNCTUATION, ESPECIALLY COMMAS*/
 
--- ROUND: promedio de presupuesto redondeado a 2 decimales
-SELECT ROUND(AVG(budget), 2) AS avg_budget
-FROM films;
+-- VID 3: Estilo SQL
+/*Entiendo que SQL es un lenguage de programación que no es estricto en cuanto al formato
+muchas cosas que son requeridas en otros lenguages en SQL no afectan al código
+como mayúsculas, sangrías, saltos de línes, etc*/
+select title, release_year, country from films limit 3 --> funcinará, pero es más dificil de leer sobretodo si la query es larga
 
-
--- ============================================================
--- CAPÍTULO 2: Filtering Records
--- ============================================================
-
--- Películas del año 2000 en adelante
-SELECT title, release_year
+SELECT title, release_year, country
 FROM films
-WHERE release_year >= 2000;
+LIMIT 3; --> más facil de leer
 
--- Películas en inglés con certificación PG-13
-SELECT title, certification
+SELECT
+  title,
+  release_year,
+  country
 FROM films
-WHERE language = 'English'
-  AND certification = 'PG-13';
+LIMIT 3; --> más facil de leer
 
--- Películas de USA o UK
-SELECT title, country
-FROM films
-WHERE country = 'USA'
-   OR country = 'UK';
+/*otras cosas importantes a tener en cuenta:
+; --> el punto y coma al final de una oración, en POSTGRESQL no es requerido, pero es una práctica super útil, que nos ayudará a migrar de motor
+no tenemos control sobre el código sql de otras personas, cuando crean nombres de campos con palabras separadas debemos hacer referencias a ella con doble "nombre campo"  */
 
--- BETWEEN: películas entre 2000 y 2015
-SELECT title, release_year
-FROM films
-WHERE release_year BETWEEN 2000 AND 2015;
 
--- IN: múltiples países
-SELECT title, country
-FROM films
-WHERE country IN ('USA', 'UK', 'France', 'Germany');
-
--- LIKE: títulos que empiezan con "The"
+-- CHAPTER 2. FILTERING RECORDS
+-- VID 1: Filtering numbers
+/*Para filtrar utilizaremos WHERE
+Para ello utilizaremos operadores de comparación
+>
+>=
+<
+<=
+=
+<>*/
 SELECT title
 FROM films
-WHERE title LIKE 'The%';
+WHERE release_year > 1960; --> todos los títulos de películas con año de lanzamiento mayor a 1960
 
--- LIKE: títulos con exactamente un caracter antes de "at"
 SELECT title
 FROM films
-WHERE title LIKE '_at%';
+WHERE country = 'Japan';
+-- Orden de ejecución:
+/*FROM
+WHERE
+SELECT
+LIMIT*/
 
--- NOT LIKE: excluir títulos que empiezan con "A"
+-- VID 2: VARIOS CRITERIOS / MULTIPLE CRITERIA
+/*a veces queremos filtrar por varios criterios distintos, lo haremos con algunas palabras claves:
+* AND
+* OR
+* BETWEEN */
+SELECT * 
+FROM coats
+WHERE color = 'red' OR length = 'short'; --> cuando necesitamos satisfacer al menos una condición
+
+SELECT *
+FROM coats
+WHERE color = 'yellow' AND length = 'short'; --> cuando necesitamos satisfacer todas las condiciones
+
+SELECT * 
+FROM coats
+WHERE buttons BETWEEN 1 AND 5;
+
+--> debemos especificar el campo para cada condición:
+SELECT title 
+FROM films
+WHERE release_year = 1994 OR release_year = 2000; --> correcto
+
+-- AND, OR
+SELECT title 
+FROM films
+WHERE (release_year = 1994 OR release_year = 1995)
+  AND (certification = 'PG' OR certification = 'R'); --> con múltiples condiciones de filtrado, necesitamos encerrar las cláusulas entre paréntesis
+
+-- BETWEEN, AND
 SELECT title
 FROM films
-WHERE title NOT LIKE 'A%';
+WHERE release_year >= 1994 AND release_year <= 2000; --> correcto
 
--- IS NULL: películas sin presupuesto registrado
 SELECT title
 FROM films
-WHERE budget IS NULL;
+WHERE release_year BETWEEN 1994 AND 2000; --> más fácil de leer
 
--- IS NOT NULL: películas con presupuesto registrado
-SELECT title, budget
+-- BETWEEN, AND, OR
+SELECT title
 FROM films
-WHERE budget IS NOT NULL
-ORDER BY budget DESC
-LIMIT 10;
+WHERE release_year BETWEEN 1994 AND 2000 AND country = 'UK';
 
+-- VID 3: FILTERING TEXT / FILTRAR TEXTO
+/*Con WHERE podemos filtrar texto exacto, pero hay mejores herramientas que hacen más versátil el filtrado por texto, a veces queremos encontrar PATRONES
+* LIKE --> para encontrar patrones en texto, usamos comodines, el % y el _
+* NOT LIKE
+* IN
+* NOT IN*/
+SELECT name
+FROM people
+WHERE name LIKE 'Ade%';
 
--- ============================================================
--- CAPÍTULO 3: Aggregate Functions
--- ============================================================
+SELECT name 
+FROM people
+WHERE name LIKE 'Ev_'
 
--- Contar películas por año de lanzamiento
-SELECT release_year,
-       COUNT(*) AS films_released
+SELECT name
+FROM people
+WHERE name NOT LIKE 'A.%'
+
+SELECT name 
+FROM people
+WHERE name LIKE '%r';
+
+SELECT name 
+FROM people
+WHERE name LIKE '__t%';
+
+SELECT title
 FROM films
-GROUP BY release_year
-ORDER BY release_year;
+WHERE release_year IN (1920, 1930, 1940); --> va entre paréntesis
 
--- Promedio de presupuesto por país
-SELECT country,
-       ROUND(AVG(budget), 2) AS avg_budget
+SELECT title
 FROM films
-WHERE budget IS NOT NULL
-GROUP BY country
-ORDER BY avg_budget DESC
-LIMIT 10;
+WHERE country IN ('Germany', 'France', 'Spain'); --> podemos buscar la coincidencia de elementos como en listas
 
--- HAVING: países con más de 500 películas
-SELECT country,
-       COUNT(*) AS total_films
-FROM films
-GROUP BY country
-HAVING COUNT(*) > 500
-ORDER BY total_films DESC;
+-- VID 4: NULL VALUES / VALORES NULOS
 
-
--- ============================================================
--- CAPÍTULO 4: Sorting and Grouping
--- ============================================================
-
--- Orden descendente por ingresos brutos
-SELECT title, gross
-FROM films
-WHERE gross IS NOT NULL
-ORDER BY gross DESC
-LIMIT 10;
-
--- Ordenar por múltiples columnas
-SELECT release_year, title, gross
-FROM films
-WHERE gross IS NOT NULL
-ORDER BY release_year DESC, gross DESC;
-
--- Consulta completa combinando todo
--- Top años con mejor promedio de ingresos (mínimo 10 películas)
-SELECT release_year,
-       COUNT(*) AS total_films,
-       ROUND(AVG(gross), 2) AS avg_gross
-FROM films
-WHERE gross IS NOT NULL
-GROUP BY release_year
-HAVING COUNT(*) >= 10
-ORDER BY avg_gross DESC
-LIMIT 10;
