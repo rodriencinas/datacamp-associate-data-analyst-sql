@@ -157,4 +157,78 @@ FROM films
 WHERE country IN ('Germany', 'France', 'Spain'); --> podemos buscar la coincidencia de elementos como en listas
 
 -- VID 4: NULL VALUES / VALORES NULOS
+/*Vamos a ver cómo filtrar datos que incluyen valores NULL --> representa un valor faltante o desconocido
+En el mundo real nuestras bases de datos probablemente tendrán campos vacíos por error humano o porque no hay información disponible*/
+SELECT COUNT(*) AS count_records
+FROM people; --> contamos todos los registros
 
+--> forma rápida de ver cuántos datos fatan:
+SELECT name
+FROM people
+WHERE birthdate IS NULL; --> verificamos qué nombres no tienen fecha de nacimiento
+
+SELECT COUNT(*) AS no_birthdates
+FROM people
+WHERE birthdate IS NULL; --> recuento de registros sin fecha de nacimiento
+
+--> a veces querremos filtrar por valores faltantes para obtener resultados que NO sean Null
+SELECT COUNT(name) AS count_birthdates
+FROM people
+WHERE birthdate IS NOT NULL; --> IS NOT NULL filtra por registros SIN VALORES NULL
+
+--> COUNT(field_name) vs IS NOT NULL ---> AMBOS CONTARÁN VALORES NO FALTANTES
+
+-- CHAPTER 3. AGGREGATE FUNCTIONS
+-- VID 1: Summarizing data
+/*Aprenderemos a resumir datos con funciones de agregación
+Una FUNCIÓN DE AGREGACIÓN/AGGREGATE FUNCTION realiza un cálculo sobre varios valores y devuelve un único valor. Aprenderemos:
+AVG()/ SUM()/ MIN()/ MAX()/ COUNT()*/
+
+-- Algunas de estas funciones las podemos usar en campos NO NUMERICOS O NON-NUMERICAL DATA
+SELECT MIN(country)
+FROM films; --> el string figurativamente más corto o de menor valor (A - Z)
+SELECT MAX(country)
+FROM films; --> el string figurativamente más largo o de mayor valor
+
+--> En el conjunto de resultados en estos casos el nombre del campo por defecto es el nombre de la función, por lo que necesitamos ALIASING WHEN SUMMARIZING
+SELECT MAX(country) AS min_country
+FROM films;
+
+-- VID 2: Summarizing subsets
+/*Combinaremos nuestras habilidades de filtrado con nuestras nuevas habilidades de resumen
+WHERE + AGGREGATE FUNCTIONS*/
+--> a continuación el presupuesto promedio de las películas estrenadas desde 2010 inclusive en adelante
+SELECT AVG(budget) AS avg_budget
+FROM films
+WHERE release_year >= 2010; --> WHERE clause execute before the SELECT statement
+
+SELECT MIN(budget) AS min_budget
+FROM films
+WHERE release_year = 2010;
+
+SELECT MAX(budget) AS max_budget
+FROM films
+WHERE release_year = 2010;
+
+SELECT SUM(budget) AS sum_budget
+FROM films
+WHERE release_year = 2010;
+
+SELECT COUNT(budget) AS count_budget
+FROM films
+WHERE release_year = 2010;
+
+--> Probablemente querramos limpiar algunos de los decimales locos que puedan aparecer, lo hacemos con ROUND() function
+--> ROUND(number_to_round, decimal_places) ---> 2 argumentos
+SELECT ROUND(AVG(budget), 2) AS avg_budget
+FROM films
+WHERE release_year >= 2010;
+
+SELECT ROUND(AVG(budget)) AS avg_budget
+FROM films
+WHERE release_year >= 2010; --> El segundo parámetro de ROUND es opcional, si no lo ponemos redondea a un número ENTERO
+
+--> segundo parámetro con VALOR NEGATIVO redondea hacia la IZQUIERDA del punto decimal
+SELECT ROUND(AVG(budget), -5) AS avg_budget
+FROM films
+WHERE release_year >= 2010;
