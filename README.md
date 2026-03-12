@@ -16,9 +16,9 @@ Aquí documento los ejercicios, queries y proyectos que voy completando a lo lar
 | # | Curso / Proyecto | Tipo | Duración | Estado |
 |---|-----------------|------|----------|--------|
 | 01 | [Introduction to SQL](./01-introduction-to-sql/) | Curso | ~2 hs | ✅ Completado |
-| 02 | [Intermediate SQL](./02-intermediate-sql/) | Curso | ~4 hs | 🔄 En progreso |
+| 02 | [Intermediate SQL](./02-intermediate-sql/) | Curso | ~4 hs | ✅ Completado |
 | 🎁 | [Analyzing Students' Mental Health](./projects/analyzing-students-mental-health/) | Proyecto | — | ⏳ Pendiente |
-| 03 | [Joining Data in SQL](./03-joining-data-in-sql/) | Curso | ~5 hs | ⏳ Pendiente |
+| 03 | [Joining Data in SQL](./03-joining-data-in-sql/) | Curso | ~5 hs | 🔄 En progreso |
 | 04 | [Data Manipulation in SQL](./04-data-manipulation-in-sql/) | Curso | ~5 hs | ⏳ Pendiente |
 | 05 | [PostgreSQL Summary Stats and Window Functions](./05-postgresql-summary-stats-and-window-functions/) | Curso | ~4 hs | ⏳ Pendiente |
 | 06 | [Functions for Manipulating Data in PostgreSQL](./06-functions-for-manipulating-data-in-postgresql/) | Curso | ~4 hs | ⏳ Pendiente |
