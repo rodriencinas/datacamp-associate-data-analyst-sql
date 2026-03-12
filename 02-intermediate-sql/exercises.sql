@@ -232,3 +232,120 @@ WHERE release_year >= 2010; --> El segundo parámetro de ROUND es opcional, si n
 SELECT ROUND(AVG(budget), -5) AS avg_budget
 FROM films
 WHERE release_year >= 2010;
+
+-- VID 3: Aliasing and arithmetic
+/*Aprenderemos a usar más aritmética en nuestras consultas y analizaremos más de cerca el alias con AS
+Arithmetic -> + / - / * / */
+SELECT (4 + 3);
+SELECT (4 - 3);
+SELECT (4 / 3); ---> la división da como resultado 1 porque dividimos ENTERO/ENTERO
+SELECT (4.0 / 3.0)
+SELECT (4 * 3);
+
+-- Aggregate functions vs arithmetic 
+/*AGGREGATE FUNCTIONS --> REALIZAN OPERACIONES VERTICALMENTE, ES DECIR EN EL CAMPO O COLUMNA
+ARITHMETIC --> SUMA REGISTROS HORIZONTALMENTE*/
+SELECT (gross - budget) AS profit
+FROM films; ---> recaudación - presupuesto = cantidad de beneficio (operación horizontal)
+
+---> Resulta importante colocar ALIAS en las funciones que utilicemos
+SELECT MAX(budget) AS max_budget,
+    MAX(duration) AS max_duration
+FROM films;
+
+-- CHAPTER 4. SORTING AND GROUPING
+-- VID 1: Sorting results
+/*Aprenderemos a agrupar y ordenar resultados para obtener más información*/
+---> Sorting results significa que queremos poner nuestros datos en un orden específico usando ORDER BY
+SELECT title, budget
+FROM films
+ORDER BY budget; ---> de manera predeterminada orderna los valores de la columna indicada en orden ASCENDENTE
+
+SELECT title, budget
+FROM films
+ORDER BY title;
+
+SELECT title, budget
+FROM films
+ORDER BY budget ASC; ---> mismo resultado que por defecto, pero MÁS LEGIBLE
+
+SELECT title, budget
+FROM films
+ORDER BY budget DESC; ---> DESC ordenará los resultados en orden DESCENDENTE
+
+SELECT title, budget
+FROM films
+WHERE budget IS NOT NULL
+ORDER BY budget DESC; ---> filtramos registros con valores NO NULOS
+
+---> ORDER BY multiple fields --> ORDER BY field_one, field_two
+SELECT title, budget
+FROM films
+ORDER BY budget DESC, title ASC
+
+SELECT title, wins
+FROM films
+ORDER BY wins DESC; ---> Aquí seguramente obtendremos un EMPATE, por lo que sería útil utilizar un campo más para desempatar
+
+SELECT title, wins, imdb_score
+FROM films
+ORDER BY wins DESC, imdb_score DESC
+
+-- VID 2: Grouping data
+/*Aprendimos a ordenar nuestros datos, veremos cómo agruparlos
+En el mundo real a menudo necesitaremos resumir nuestros datos para un grupo particular de resultados
+SQL nos permite agrupar con la cláusula GROUP BY*/
+SELECT certification, COUNT(title) AS title_count
+FROM films
+GROUP BY certification; ---> GROUP BY colapsa las filas, por lo que es necesario aplicarles uns función de agregación
+
+--> Podemos agrupar en múltiples campos
+SELECT certification, language, COUNT(title) AS title_count
+FROM films
+ORDER BY certification, language;
+
+--> GROUP BY + ORDER BY --> podemos agrupar nuestros resultados, hacer un cálculo y luego ordenar nuestros resultados
+SELECT 
+  certification,
+  COUNT(title) AS title_count
+FROM films
+GROUP BY certification
+ORDER BY title_count DESC; ---> observamos que podemos usar el ALIAS del campo ya que se ejecuta primero y luego el ORDER BY
+
+-- VID 3: Filtering grouped data
+/*Combinaremos FILTRADO + AGRUPACIÓN
+En SQL NO podemos filtrar funciones agregadas con cláusulas WHERE
+Los GRUPOS TIENEN SU PROPIA PALABRA ESPECIAL PARA FILTRADO ---> HAVING*/
+SELECT 
+  release_year,
+  COUNT(title) AS title_count
+FROM films
+GROUP BY release_year
+HAVING COUNT(title) > 10; ---> muestra solo aqullos años en los que se estrenaron más de diez películas
+
+/*La razón por la que los grupos tiene su propia palabra clave para filtrar se reduce al ORDEN DE EJECUCIÓN*/
+SELECT --> 5
+  certification,
+  COUNT(title) AS title_count
+FROM films --> 1
+WHERE certification IN ("G", "PG", "PG-13") --> 2
+GROUP BY certification --> 3
+HAVING COUNT(title) > 500 --> 4
+ORDER BY title_count DESC --> 6
+LIMIT 3; --> 7
+
+--> en qué año la duración media de una película fue superior a dos horas?
+SELECT release_year, AVG(duration) AS avg_duration
+FROM films
+GROUP BY release_year
+HAVING AVG(duration) > 120
+ORDER BY release_year ASC;
+
+SELECT release_year, AVG(budget) AS avg_budget, AVG(gross) AS avg_gross
+FROM films
+WHERE release_year > 1990
+GROUP BY release_year
+HAVING AVG(budget) > 60000000
+-- Order the results from highest to lowest average gross and limit to one
+ORDER BY avg_gross DESC
+LIMIT 1;
